@@ -69,22 +69,23 @@ function main() {
   printMaxScores(tsumMaxScores);
 
   loadTsumRotationImages(tsumMaxScores);
-
+console.log(Date.now());
   for (var i = 0; i < 5 && i < tsumMaxScores.length; i++) {
     for (var j = 0; j < 8; j++) {
       var rotatedImage = tsumMaxScores[i].rotations[j];
-      var results = findImages(boardImg, rotatedImage, 0, 10);
+      var scoreLimit = tsumMaxScores[i].score * 1;
+      var results = findImages(boardImg, rotatedImage, scoreLimit, 10, true);
       for (var k in results) {
         var result = results[k];
         
-        drawCircle(boardImg, result.x + 7, result.y + 7, 2, 255, 0, 0, 0);
+        // drawCircle(boardImg, result.x + 7, result.y + 7, 2, 255, 0, 0, 0);
       }
       
-      console.log(JSON.stringify(results));
-      break;
+      // console.log(JSON.stringify(results));
+      // break;
     }
   }
-  
+  console.log(Date.now());
 
   saveImage(boardImg, getStoragePath() + "/boardImg2.jpg");
   releaseImage(boardImg);
@@ -98,7 +99,7 @@ function loadTsumRotationImages(tsumMaxScores) {
     tsumMaxScores[i].rotations = [];
     var maxScore = tsumMaxScores[i];
     for (var r in rotations) {
-      var filename = tsumPath + '/' + maxScore.key + '_0.png';
+      var filename = tsumPath + '/' + maxScore.key + '_' + rotations[r] + '.png';
       tsumMaxScores[i].rotations.push(openImage(filename));
     }
   }
