@@ -209,7 +209,71 @@ if (IS_TSUM_LOAD === true) {
 // tap(540, 1330, 100);
 // sleep(500);
 
-run();
+var board = run();
+linkTsum(board);
+
+function getDistance(t1, t2) {
+  return Math.sqrt((t1.x - t2.x) * (t1.x - t2.x) + (t1.y - t2.y) * (t1.y - t2.y));
+}
+
+function findNearTsum(tsum, tsums) {
+  var minDis = 99999;
+  var minTsum = null;
+  var idx = -1;
+  for(var i in tsums) {
+    var dis = getDistance(tsum, tsums[i]);
+    if (dis < minDis) {
+      minDis = dis;
+      minTsum = tsums[i];
+      idx = i;
+    }
+  }
+  return {dis: minDis, tsum: minTsum, idx: idx};
+}
+
+function calculateNearTsumPaths(tsum, ts) {
+  var path = [];
+  var tsums = ts.slice(); // copy array
+  while(true) {
+    var result = findNearTsum(tsum, tsums);
+    var minDis = result.dis;
+    var minTsum = result.tsum;
+    var minIdx = result.idx;
+    if (minIdx == -1 || minDis > 25) {
+      break;
+    }
+    tsum = minTsum;
+    tsums.splice(minIdx, 1);
+    path.push(tsum);
+  }
+  return path;
+}
+
+function linkTsum(board) {
+  console.log(Date.now());
+  var tsums = {};
+  for (var i in board) {
+    var tsum = board[i];
+    if (tsums[tsum.tsumIdx] == undefined) {
+      tsums[tsum.tsumIdx] = [];
+    }
+    tsums[tsum.tsumIdx].push(tsum);
+  }
+  
+  for (var tsumIdx in tsums) {
+    for (var i = 0; i < tsums[tsumIdx].length; i++) {
+      var path = calculateNearTsumPaths(tsums[tsumIdx][i], tsums[tsumIdx]);
+      if (path.length > 2) {
+        console.log(tsumIdx, path.length);
+      } else {
+        tsums[tsumIdx].splice(i, 1);
+        i--;
+      }
+    }
+  }
+  console.log(Date.now());
+}
+
 // console.log(tsumMaxScores);
 
 // sleep(500);
